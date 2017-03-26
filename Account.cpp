@@ -53,39 +53,46 @@ void Account::setPassword(const string &password) {
 
 bool Account::authenticate(string name, string password) {
   cout << "Attempt to auth " << name << " With " << password << endl;
-  mysqlconnector* Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
-  sql::Connection *DBcon = Conn->Connect();
-  sql::PreparedStatement  *prep_stmt;
-  sql::ResultSet *res;
-  string SQL = "SELECT * FROM accounts WHERE uniqueID=?";
-  prep_stmt = DBcon->prepareStatement(SQL);
-  prep_stmt->setString(1,name);
-  res = prep_stmt->executeQuery();
-  string dbID;
-  string dbPw;
-  if (res->next()){
-    dbID = res->getString("uniqueID");
-    dbPw = res->getString("password");
-  }
-  if(dbID == ""){
-    cout << "[Account::Authenticate] Failed to find userID" << endl;
-    return false;
-  }
-  cout << "[Account::Authenticate] ID Received: " << dbID << endl;
-  cout << "[Account::Authenticate] ID: " << name << endl;
-  cout << "[Account::Authenticate] Password Received: " << password << endl;
-  cout << "[Account::Authenticate] Password: " << dbPw << endl;
+  try {
+    mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+    sql::Connection *DBcon = Conn->Connect();
+    sql::PreparedStatement *prep_stmt;
+    sql::ResultSet *res;
+    string SQL = "SELECT * FROM accounts WHERE uniqueID=?";
+    prep_stmt = DBcon->prepareStatement(SQL);
+    prep_stmt->setString(1, name);
+    res = prep_stmt->executeQuery();
+    string dbID;
+    string dbPw;
+    if (res->next()) {
+      dbID = res->getString("uniqueID");
+      dbPw = res->getString("password");
+    }
+    if (dbID == "") {
+      cout << "[Account::Authenticate] Failed to find userID" << endl;
+      return false;
+    }
+    cout << "[Account::Authenticate] ID Received: " << dbID << endl;
+    cout << "[Account::Authenticate] ID: " << name << endl;
+    cout << "[Account::Authenticate] Password Received: " << password << endl;
+    cout << "[Account::Authenticate] Password: " << dbPw << endl;
 
-  if(password == dbPw){
-    cout << "[Account::Authenticate] Login SUCCESS!" << endl;
-    setName(res->getString("name"));
-    setEmail(res->getString("email"));
-    setType(res->getInt("type"));
-    setAID(res->getInt("id"));
+    if (password == dbPw) {
+      cout << "[Account::Authenticate] Login SUCCESS!" << endl;
+      setName(res->getString("name"));
+      setEmail(res->getString("email"));
+      setType(res->getInt("type"));
+      setAID(res->getInt("id"));
+    } else {
+      cout << "[Account::Authenticate] Login FAILED due to Mismatch!" << endl;
+      return false;
+    }
+    return true;
+  }catch (sql::SQLException &e) {
+    cout << "# ERR: SQLException in " << __FILE__;
+    cout << "(" << __FUNCTION__ << ") on line "<< __LINE__ << std::endl;
+    cout << "# ERR: " << e.what();
+    cout << " (MySQL error code: " << e.getErrorCode();
+    cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
   }
-  else {
-    cout << "[Account::Authenticate] Login FAILED due to Mismatch!" << endl;
-    return false;
-  }
-  return true;
 }
