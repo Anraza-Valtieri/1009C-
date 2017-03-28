@@ -17,7 +17,7 @@ mysqlconnector::~mysqlconnector(){
 }
 
 sql::Connection * mysqlconnector::Connect() {
-  std::cout << "mysqlconnector::Connect() Called" <<endl;
+  //std::cout << "mysqlconnector::Connect() Called" <<endl;
   try {
     /* Create a connection */
     driver = get_driver_instance();
