@@ -1,47 +1,6 @@
-#include <sstream>
-#include <iostream>
-#include <string>
-using namespace std;
+#include "result.h"
 
-class Result {
-private:
-	int resultID;
-	int userID;
-	string quizname;
-	string markObtained;
-	string totalMarks;
-	string inputAnswer;
-	string actualAnswer;
-	string question;
-	string indvmark;
-//  DbConection dc;
-
-public:
-	Result();
-	Result(int userID, string quizname, string markObtained, string totalMarks, string inputAnswer, string actualAnswer, string question, string indvmark);
-	int getResultID();
-	void setResultID(int resultID);
-	int getUserID();
-	void setUserID(int userID);
-	string getQuizname();
-	void setQuizname(string quizname);
-	string getMarkObtained();
-	void setMarkObtained(string markObtained);
-	string getTotalMarks();
-	void setTotalMarks(string totalMarks);
-	string getInputAnswer();
-	void setInputAnswer(string inputAnswer);
-	string getActualAnswer();
-	void setActualAnswer(string actualAnswer);
-	string getQuestion();
-	void setQuestion(string question);
-	string getIndvmark();
-	void setIndvmark(string indvmark);
-	void createResult();
-	Result getSingleResult();
-};
-
-Result::Result(){
+Result::Result() {
 	cout << "lol";
 }
 
@@ -128,9 +87,68 @@ void Result::setIndvmark(string indvmark) {
 }
 
 void Result::createResult() {
-	//gotta wait for db
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		int res;
+		string SQL = "INSERT INTO results (user, quizname, obtained, totalmark, inputanswer, actualanswer, question, indvmark) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setInt(1, userID);
+		prep_stmt->setString(2, quizname);
+		prep_stmt->setString(3, markObtained);
+		prep_stmt->setString(4, totalMarks);
+		prep_stmt->setString(5, inputAnswer);
+		prep_stmt->setString(6, actualAnswer);
+		prep_stmt->setString(7, question);
+		prep_stmt->setString(8, indvmark);
+		res = prep_stmt->executeUpdate();
+		if (res > 0) {
+			cout << "[RESULT]A new result was inserted successfully!" << endl;
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	//Close db connection?
+	return;
 }
 
 Result Result::getSingleResult() {
-	//GOTTA WAIT FO' DEM' DB
+	Result result; 
+	
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
+		string SQL = "SELECT * FROM results WHERE rID=" + resultID;
+		prep_stmt = DBcon->prepareStatement(SQL);
+		res = prep_stmt->executeQuery();
+
+		if (res->next()) {
+			result.setUserID(res->getInt("user"));
+			result.setQuizname(res->getString("quizname"));
+			result.setMarkObtained(res->getString("obtained"));
+			result.setTotalMarks(res->getString("totalmark"));
+			result.setInputAnswer(res->getString("inputanswer"));
+			result.setActualAnswer(res->getString("actualanswer"));
+			result.setQuestion(res->getString("question"));
+			result.setIndvmark(res->getString("indvmark"));
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return result;
 }

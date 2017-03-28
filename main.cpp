@@ -13,6 +13,7 @@ int main() {
   cout << "MySQL connection Success" << endl;
   DBcon->close();
   string command = "";
+  int accttype = -1;
   while (command != "quit") {
     string user, password;
     cout << "Username: " << endl;
@@ -25,12 +26,11 @@ int main() {
     //STudent object
     //Student student;
     bool login = acct.authenticate(acct.getName(), acct.getPassword());
-    int accttype = -1;
     if (!login) {
       cout << "[MAIN] Failed login process";
       return 0;
     } else {
-      int accttype = acct.getType();
+      accttype = acct.getType();
       switch (accttype) {
         case 0  : // STUDENT
           cout << "Student " << acct.getName() << " has logged in." << endl;
@@ -56,7 +56,12 @@ int main() {
     }
 
     if(accttype == 1){ // Teacher
-      
+      if(command == ""){
+
+      }
+      if(command == ""){
+
+      }
     }
   }
   cout << "END";

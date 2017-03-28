@@ -1,59 +1,5 @@
-#include <sstream>
-#include <iostream>
-#include <string>
-#include <vector>
-using namespace std;
-
-class Questions {
-private:
-	int question_id;
-	string teacher_id;
-	string subject;
-	string question_text;
-	int question_type; //MCQ - 0 | T/F - 1 | SA - 2
-	string data1; //SA - MCQ - T/F
-	string data2; //MCQ - T/F
-	string data3; //MCQ
-	string data4; //MCQ
-	string data5; //Store MCQ choice
-	double marks;
-//  DbConnection dc;
-
-public:
-	Questions();
-	Questions(string teacher_id, string subject, string questions_text, int question_type, string data1, string data2, string data3, string data4, string data5, double marks);
-	int getQuestion_id();
-	void setQuestion_id(int question_id);
-	string getTeacher_id();
-	void setTeacher_id(string teacher_id);
-	string getSubject();
-	void setSubject(string subject);
-	string getQuestion_text();
-	void setQuestion_text(string question_text);
-	int getQuestion_type();
-	void setQuestion_type(int question_type);
-	string getData1();
-	void setData1(string data1);
-	string getData2();
-	void setData2(string data2);
-	string getData3();
-	void setData3(string data3);
-	string getData4();
-	void setData4(string data4);
-	string getData5();
-	void setData5(string data5);
-	double getMarks();
-	void setMarks(double marks);
-	void createQuestion();
-	void updateQuestion();
-	vector<Questions> getQuestionsData(string question_id);
-	vector<Questions> getQuestionsDataBySubject(string subject);
-	vector<Questions> getPracticeQuestions();
-	void cleanupQuestions(string subject);
-	void deleteQuestion(string question_id, string quizN);
-	void deleteQuestions(string quizN);
-	void updateSubject(string subject1, string subject2);
-};
+#include "questions.h"
+#pragma once
 
 Questions::Questions() {
 	cout << "lol";
@@ -161,38 +107,295 @@ void Questions::setMarks(double marks) {
 }
 
 void Questions::createQuestion() {
-	//Db.
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		int res;
+		string SQL = "INSERT INTO quiz_questions (question_id, teacher_id, subject, question_text, question_type, data1, data2, data3, data4, data5, marks) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setInt(1, question_id);
+		prep_stmt->setString(2, teacher_id);
+		prep_stmt->setString(3, subject);
+		prep_stmt->setString(4, question_text);
+		prep_stmt->setInt(5, question_type);
+		prep_stmt->setString(6, data1);
+		prep_stmt->setString(7, data2);
+		prep_stmt->setString(8, data3);
+		prep_stmt->setString(9, data4);
+		prep_stmt->setString(10, data5);
+		prep_stmt->setDouble(11, marks);
+		res = prep_stmt->executeUpdate();
+		if (res > 0) {
+			cout << "Question Created!" << endl;
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return;
 }
 
 void Questions::updateQuestion() {
-	//DB.
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		int res;
+		string SQL = "UPDATE quiz_questions set question_id = ?, teacher_id = ?, subject = ?, question_text = ?, question_type = ?, data1 = ?, data2 = ?, data3 = ?, data4 = ?, data5 = ?, marks = ? where (subject = ? and question_id = ?)";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setInt(1, question_id);
+		prep_stmt->setString(2, teacher_id);
+		prep_stmt->setString(3, subject);
+		prep_stmt->setString(4, question_text);
+		prep_stmt->setInt(5, question_type);
+		prep_stmt->setString(6, data1);
+		prep_stmt->setString(7, data2);
+		prep_stmt->setString(8, data3);
+		prep_stmt->setString(9, data4);
+		prep_stmt->setString(10, data5);
+		prep_stmt->setDouble(11, marks);
+		prep_stmt->setString(12, subject);
+		prep_stmt->setInt(13, question_id);
+		res = prep_stmt->executeUpdate();
+		if (res > 0) {
+			cout << "Question update!" << endl;
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return;
 }
 
 vector<Questions> Questions::getQuestionsData(string question_id) {
-	//db
+	vector<string> id;
+	boost::split(id, question_id, boost::is_any_of(","), boost::token_compress_on);
+	vector<Questions> aq;
+	aq.reserve(20);
+	mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+	sql::Connection *DBcon = Conn->Connect();
+	sql::PreparedStatement *prep_stmt;
+	sql::ResultSet *res;
+	try {
+		for (int i = 0; i < id.size(); i++) {
+			string SQL = "SELECT * FROM quiz_questions WHERE question_id = ?";
+			prep_stmt = DBcon->prepareStatement(SQL);
+			prep_stmt->setString(1, id[i]);
+			res = prep_stmt->executeQuery();
+			if (res->next()) {
+				Questions q;
+				q.setQuestion_text(res->getString("question_text"));
+				q.setSubject(res->getString("subject"));
+				q.setQuestion_type(res->getInt("question_type"));
+				q.setData1(res->getString("data1"));
+				q.setData2(res->getString("data2"));
+				q.setData3(res->getString("data3"));
+				q.setData4(res->getString("data4"));
+				q.setData5(res->getString("data5"));
+				q.setMarks(res->getDouble("marks"));
+
+				aq.push_back(q);
+			}
+			DBcon->close();
+		}
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return aq;
 }
 
 vector<Questions> Questions::getQuestionsDataBySubject(string subject) {
-	//db!
+	vector<Questions> aq;
+	aq.reserve(20);
+
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
+		string SQL = "SELECT * FROM quiz_questions WHERE subject = ?";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setString(1, subject);
+		res = prep_stmt->executeQuery();
+
+		while (res->next()) {
+			Questions q;
+			q.setQuestion_text(res->getString("question_text"));
+			q.setSubject(res->getString("subject"));
+			q.setQuestion_type(res->getInt("question_type"));
+			q.setData1(res->getString("data1"));
+			q.setData2(res->getString("data2"));
+			q.setData3(res->getString("data3"));
+			q.setData4(res->getString("data4"));
+			q.setData5(res->getString("data5"));
+			q.setMarks(res->getDouble("marks"));
+
+			aq.push_back(q);
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return aq;
 }
 
-vector<Questions> Questions::getPracticeQuestions() {
-	//db!!!
+vector<Questions> Questions::getPracticeQuestions(int number) {
+	vector<Questions> aq;
+	aq.reserve(20);
+
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
+		string SQL = "SELECT * FROM quiz_questions ORDER BY RAND() LIMIT ?";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setInt(1, number);
+		res = prep_stmt->executeQuery();
+
+		while (res->next()) {
+			Questions q;
+			q.setQuestion_text(res->getString("question_text"));
+			q.setSubject(res->getString("subject"));
+			q.setQuestion_type(res->getInt("question_type"));
+			q.setData1(res->getString("data1"));
+			q.setData2(res->getString("data2"));
+			q.setData3(res->getString("data3"));
+			q.setData4(res->getString("data4"));
+			q.setData5(res->getString("data5"));
+			q.setMarks(res->getDouble("marks"));
+
+			aq.push_back(q);
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return aq;
 }
 
 void Questions::cleanupQuestions(string subject) {
-	//dbbdbdbdbdbd
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
+		res = DBcon->createStatement()->executeQuery("SET @num := 0; UPDATE quiz_questions SET question_id = @num := (@num+1) where subject = '" + subject + "'");
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+
+	return;
 }
 
 void Questions::deleteQuestion(string questions_id, string quizN) {
-	//dbdbdbdbdbdbdbddbdb
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		int res;
+		string SQL = "DELETE FROM quiz_questions WHERE question_id = ? and subject = ?";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setString(1, questions_id);
+		prep_stmt->setString(2, quizN);
+		res = prep_stmt->executeUpdate();
+		if (res > 0) {
+			cleanupQuestions(quizN);
+			cout << "Question Deleted!" << endl;
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return;
 }
 
 void Questions::deleteQuestions(string quizN) {
-	//dbdbdbdbdbdb
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		int res;
+		string SQL = "DELETE FROM quiz_questions WHERE subject = ?";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setString(1, quizN);
+		res = prep_stmt->executeUpdate();
+		if (res > 0) {
+			cleanupQuestions(quizN);
+			cout << "Question Deleted!" << endl;
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return;
 }
 
 void Questions::updateSubject(string subject1, string subject2) {
-	//bdbddbdbdbdbddb
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		int res;
+		string SQL = "update quiz_questions set subject = ? WHERE subject = ?";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setString(1, subject1);
+		prep_stmt->setString(2, subject2);
+		res = prep_stmt->executeUpdate();
+		if (res > 0) {
+			cout << "Question Subject updated!" << endl;
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return;
 }
 
