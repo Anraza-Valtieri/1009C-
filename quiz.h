@@ -13,8 +13,9 @@ protected:
 	string questionids;
 	string subject;
 	//  DbConnection dc;
+    string allquiz;
 
-public:
+ public:
 	Quiz();
 	Quiz(string quizname, string questionids, string subject);
 	int getQuiz_id();
@@ -25,6 +26,7 @@ public:
 	void setQuestionids(string questionids);
 	string getSubject();
 	void setSubject(string subject);
+    void getQuizList();
 	void getQuizDBName();
 	string getQuestions(string subject);
 	void createquiz();
@@ -32,4 +34,7 @@ public:
 	void setUpdateQuizName(string subject, string mainQuizName);
 	void cleanupQuiz();
 	void deleteQuiz(string quiz_id, string mainQuizName);
+    const string &getAllquiz() const;
+    void setAllquiz(const string &allquiz);
+    void getQuiz(string args);
 };

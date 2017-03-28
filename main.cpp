@@ -4,6 +4,7 @@
 #include "Account.h"
 #include "Teacher.h"
 #include "questions.h"
+#include "quiz.h"
 #include "mysqlconnector.h"
 
 using namespace std;
@@ -67,8 +68,29 @@ int main() {
 		}
 
 		if (accttype == 1) { // Teacher
+          if(command == "viewlist"){
+            Quiz quiz;
+            quiz.getQuizList();
+          }
 
-		}
+          if(command == "openquiz"){
+            Quiz quiz;
+            string args = "";
+            cout << "Insert Quiz name: ";
+            cin >> args;
+            quiz.getQuiz(args);
+
+          }
+          if(command == "createquiz"){
+
+          }
+          if(command == "createtopic"){
+
+          }
+          if(command == "createquestions"){
+
+          }
+        }
 	}
 	cout << "END" << endl;
 }

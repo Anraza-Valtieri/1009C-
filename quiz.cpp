@@ -42,19 +42,49 @@ void Quiz::setSubject(string subject) {
 	this->subject = subject;
 }
 
-void Quiz::getQuizDBName() {
+void Quiz::getQuizList(){
 	try {
 		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
 		sql::Connection *DBcon = Conn->Connect();
 		sql::PreparedStatement *prep_stmt;
 		sql::ResultSet *res;
-		string SQL = "SELECT quizname FROM quiz WHERE quiz_id=" + quiz_id;
+		string SQL = "SELECT quizname FROM quiz";
 		prep_stmt = DBcon->prepareStatement(SQL);
 		res = prep_stmt->executeQuery();
-
-		if (res->next()) {
-			this->setQuizname(res->getString("quizname"));
+		cout << "Quizlist are: " << endl;
+		while (res->next()) {
+			cout << res->getString("quizname") << endl;
 		}
+		cout << endl;
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return;
+}
+
+void Quiz::getQuiz(string args){
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
+		string SQL = "SELECT * FROM quiz where quizname =?";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setString(1,args);
+		res = prep_stmt->executeQuery();
+		if(res->next()) {
+			setQuiz_id(res->getInt("quiz_id"));
+			setQuizname(res->getString("quizname"));
+			setQuestionids(res->getString("question_id"));
+			setSubject(res->getString("subject"));
+		}
+		cout << endl;
 		DBcon->close();
 	}
 	catch (sql::SQLException &e) {
@@ -211,3 +241,10 @@ void Quiz::deleteQuiz(string quiz_id, string mainQuizName) {
 	}
 	return;
 }
+const string &Quiz::getAllquiz() const {
+	return allquiz;
+}
+void Quiz::setAllquiz(const string &allquiz) {
+	Quiz::allquiz = allquiz;
+}
+
