@@ -1,12 +1,8 @@
 //
 // Created by Jerahmeel Chua on 24/3/17.
 //
-
 #include "header.h"
 using namespace std;
-
-#ifndef C_JERRY_ACCOUNT_H
-#define C_JERRY_ACCOUNT_H
 
 class Account {
  public:
@@ -35,5 +31,3 @@ class Account {
   string email;
   int aID;
 };
-#endif //C_JERRY_ACCOUNT_H
-

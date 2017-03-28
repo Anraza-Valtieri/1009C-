@@ -94,5 +94,7 @@ bool Account::authenticate(string name, string password) {
     cout << "# ERR: " << e.what();
     cout << " (MySQL error code: " << e.getErrorCode();
     cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+    return false;
   }
+  return false;
 }
