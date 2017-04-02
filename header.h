@@ -21,6 +21,8 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <boost/shared_ptr.hpp>
+#include <string.h>
 #include "mysqlconnector.h"
+
 
 #endif //C_JERRY_HEADER_H

@@ -64,7 +64,7 @@ void Student::attemptQuestions() {
 		} 
 		else {
 			cout << "You have reached the end of the quiz." << endl;
-			system("pause");
+			//system("pause");
 		}
 
 

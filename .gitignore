@@ -30,3 +30,7 @@
 \.idea/
 
 cmake-build-debug/
+
+\.DS_Store
+
+\.Qtgui_v12\.zip\.icloud

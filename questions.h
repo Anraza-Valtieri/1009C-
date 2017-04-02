@@ -1,6 +1,4 @@
 #include <sstream>
-#include <iostream>
-#include <string>
 #include <vector>
 #include <boost/algorithm/string/classification.hpp> // Include boost::for is_any_of
 #include <boost/algorithm/string/split.hpp> // Include for boost::split
@@ -14,7 +12,7 @@ protected:
 	string teacher_id;
 	string subject;
 	string question_text;
-	int question_type; //MCQ - 0 | T/F - 1 | SA - 2
+	int question_type; //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
 	string data1; //SA - MCQ - T/F
 	string data2; //MCQ - T/F
 	string data3; //MCQ
@@ -53,8 +51,12 @@ public:
 	vector<Questions> getQuestionsData(string question_id);
 	vector<Questions> getQuestionsDataBySubject(string subject);
 	vector<Questions> getPracticeQuestions(int number);
+	vector<Questions> getSelectQuestions(int number, string subjects);
+	vector<string> getAllSubjects();
+    vector<string> getAllQuestions();
 	void cleanupQuestions(string subject);
 	void deleteQuestion(string question_id, string quizN);
 	void deleteQuestions(string quizN);
 	void updateSubject(string subject1, string subject2);
+    int getLastQuestionID();
 };

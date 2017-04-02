@@ -37,4 +37,5 @@ protected:
     const string &getAllquiz() const;
     void setAllquiz(const string &allquiz);
     void getQuiz(string args);
+    void linkQuestion(string subject1, string qid);
 };

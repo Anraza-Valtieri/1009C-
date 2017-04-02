@@ -1,12 +1,11 @@
 #include "header.h"
-#include "Account.h"
 #include "questions.h"
 #pragma once
 using namespace std;
 #ifndef C_STUDENT_H
 #define C_STUDENT_H
 
-class Student : protected Account{
+class Student{
 private:
 	int aID;
 	string name;
