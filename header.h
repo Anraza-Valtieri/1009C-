@@ -23,6 +23,9 @@
 #include <boost/shared_ptr.hpp>
 #include <string.h>
 #include "mysqlconnector.h"
+#include <boost/algorithm/string/classification.hpp> // Include boost::for is_any_of
+#include <boost/algorithm/string/split.hpp> // Include for boost::split
+#include <boost/algorithm/string/case_conv.hpp> // Include for boost::tolower
 
 
 #endif //C_JERRY_HEADER_H
