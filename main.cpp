@@ -81,10 +81,10 @@ int main() {
 
     if (accttype == 1) { // Teacher
       if(command == "" || command == "help" || command == "command") {
-        cout << "Command list: " << endl;
+        cout << "\nCommand list: " << endl;
         cout << "viewquizlist, viewquestionlist, openquiz, " << endl;
         cout << "createquiz, createquestion, " << endl;
-        cout << "editquiz(WIP), editquestion(WIP), settopic, " << endl;
+        cout << "editquiz, editquestion(WIP), settopic, " << endl;
         cout << "linkquestions, quit" << endl;
       }
 
@@ -112,10 +112,14 @@ int main() {
         else{
           Questions q;
           vector<Questions> questions = q.getQuestionsDataBySubject(args);
-          cout << endl << "Available questions: " << endl;
-          for (int i = 0; i < questions.size(); i++) {
-            cout << questions[i].getQuestion_id() << ", " << questions[i].getSubject() << ", " << questions[i].getQuestion_text() << endl;
-          }
+          if(questions.size() > 0) {
+            cout << endl << "Available questions: " << endl;
+            for (int i = 0; i < questions.size(); i++) {
+              cout << questions[i].getQuestion_id() << ", " << questions[i].getSubject() << ", "
+                   << questions[i].getQuestion_text() << endl;
+            }
+          } else
+            cout << "No Question data returned. Invalid Subject." << endl;
         }
         cout << endl;
         command = ""; // This should be at the very end of every command
@@ -131,46 +135,44 @@ int main() {
         string qs = quiz.getSubject();
         Questions q;
         vector<Questions> aq = q.getQuestionsDataBySubject(qs);
-        for (int i = 0; i < aq.size(); i++) {
-          cout << "Question No: " << i+1 << endl;
-          cout << "Question text: " << aq[i].getQuestion_text() << endl; // Question text
-          string type = "";
-          switch (aq[i].getQuestion_type()){
-            case 0:
-              type = "MCQ";
-              break;
-            case 1:
-              type = "T/F";
-              break;
-            case 2:
-              type = "SA";
-              break;
-            case 3:
-              type = "map";
-              break;
-            default:
-              type = "Error";
-          }
-          cout << "Question type: " << type << endl; // Question type
-          if(aq[i].getQuestion_type() == 0){ //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
-            cout << "Question data 1: " << aq[i].getData1() << endl;
-            cout << "Question data 2: " << aq[i].getData2() << endl;
-            cout << "Question data 3: " << aq[i].getData3() << endl;
-            cout << "Question data 4: " << aq[i].getData4() << endl;
-          }
-          if(aq[i].getQuestion_type() == 1){ //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
-            cout << "Question data 1: " << aq[i].getData1() << endl;
-            cout << "Question data 2: " << aq[i].getData2() << endl;
-          }
-          if(aq[i].getQuestion_type() == 2){ //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
-            cout << "Question data 1: " << aq[i].getData1() << endl;
-          }
-          if(aq[i].getQuestion_type() == 3){ //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+        if (aq.size() > 0) {
+          for (int i = 0; i < aq.size(); i++) {
+            cout << "Question No: " << i + 1 << endl;
+            cout << "Question text: " << aq[i].getQuestion_text() << endl; // Question text
+            string type = "";
+            switch (aq[i].getQuestion_type()) {
+              case 0:type = "MCQ";
+                break;
+              case 1:type = "T/F";
+                break;
+              case 2:type = "SA";
+                break;
+              case 3:type = "map";
+                break;
+              default:type = "Error";
+            }
+            cout << "Question type: " << type << endl; // Question type
+            if (aq[i].getQuestion_type() == 0) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+              cout << "Question data 1: " << aq[i].getData1() << endl;
+              cout << "Question data 2: " << aq[i].getData2() << endl;
+              cout << "Question data 3: " << aq[i].getData3() << endl;
+              cout << "Question data 4: " << aq[i].getData4() << endl;
+            }
+            if (aq[i].getQuestion_type() == 1) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+              cout << "Question data 1: " << aq[i].getData1() << endl;
+              cout << "Question data 2: " << aq[i].getData2() << endl;
+            }
+            if (aq[i].getQuestion_type() == 2) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+              cout << "Question data 1: " << aq[i].getData1() << endl;
+            }
+            if (aq[i].getQuestion_type() == 3) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
 
+            }
+            cout << endl;
+            command = ""; // This should be at the very end of every command
           }
-          cout << endl;
-          command = ""; // This should be at the very end of every command
-        }
+        } else
+          cout << "No Question data returned. Invalid Quiz Name." << endl;
       }
       if(command == "createquiz"){
         string args = "";
@@ -179,6 +181,22 @@ int main() {
         Quiz quiz(args, "", args);
         quiz.createquiz();
         command = ""; // This should be at the very end of every command
+      }
+
+      if(command == "editquestion"){
+        string qtext, qtopic, data1, data2, data3, data4, data5;
+        int qtype, qid;
+        double marks;
+        cout << "Question ID to edit: " << endl;
+        cin >> qid;
+        Questions q;
+        vector<Questions> aq = q.getQuestionsData(to_string(qid));
+        if(aq.size() == 0){
+          cout << "No Question data returned. Invalid Question ID" << endl;
+        } else {
+
+        }
+
       }
 
       if(command == "createquestion"){
@@ -278,14 +296,18 @@ int main() {
       }
       if(command == "settopic"){
         int args1;
-        cout << "Quiz ID to edit: ";
+        cout << "Question ID to edit: ";
         cin >> args1;
-        string qtopic;
-        cin.ignore();
-        cout << "Quiz Topic to set: ";
-        getline(cin,qtopic);
         Questions q;
-        q.updateSubject(args1, qtopic);
+        vector<Questions> questions = q.getQuestionsData(to_string(args1));
+        if(questions.size() > 0) {
+          string qtopic;
+          cin.ignore();
+          cout << "Question Topic to set: ";
+          getline(cin, qtopic);
+          q.updateSubject(args1, qtopic);
+        } else
+          cout << "No data returned, Invalid Question ID." << endl;
         command = ""; // This should be at the very end of every command
 
       }
@@ -294,13 +316,17 @@ int main() {
         string args = "";
         cout << "Insert Quiz name to insert: ";
         cin >> args;
-        string args2 = "";
-        cin.ignore();
-        cout << "Insert Question IDs: ";
-        getline(cin, args2);
-        //cin >> args2;
         Quiz q;
-        q.linkQuestion(args, args2);
+        if(q.checkExist(args)) {
+          string args2 = "";
+          cin.ignore();
+          cout << "Insert Question IDs: ";
+          getline(cin, args2);
+          //cin >> args2;
+          q.linkQuestion(args, args2);
+        } else
+          cout << "No data returned." << endl;
+
         command = ""; // This should be at the very end of every command
       }
 
@@ -308,11 +334,17 @@ int main() {
         string args = "";
         cout << "Quiz name to edit: ";
         cin >> args;
-        string args2 = "";
-        cout << "New Quiz name: ";
-        cin >> args2;
         Quiz quiz;
-        quiz.setUpdateQuizName(args2, args);
+        if(quiz.checkExist(args)) {
+          string args2 = "";
+          cout << "New Quiz name: ";
+          cin >> args2;
+
+          quiz.setUpdateQuizName(args2, args);
+          cout << endl;
+        } else
+          cout << "No data returned." << endl;
+
         command = ""; // This should be at the very end of every command
       }
     }
