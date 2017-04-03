@@ -84,7 +84,7 @@ int main() {
         cout << "\nCommand list: " << endl;
         cout << "viewquizlist, viewquestionlist, openquiz, " << endl;
         cout << "createquiz, createquestion, " << endl;
-        cout << "editquiz, editquestion(WIP), settopic, " << endl;
+        cout << "editquiz, editquestion, settopic, " << endl;
         cout << "linkquestions, quit" << endl;
       }
 
@@ -184,19 +184,129 @@ int main() {
       }
 
       if(command == "editquestion"){
-        string qtext, qtopic, data1, data2, data3, data4, data5;
+        string qtext, qtopic, data1, data2, data3, data4, data5, teacherid;
         int qtype, qid;
         double marks;
         cout << "Question ID to edit: " << endl;
         cin >> qid;
         Questions q;
         vector<Questions> aq = q.getQuestionsData(to_string(qid));
-        if(aq.size() == 0){
+        if(aq.size() > 0){
+          teacherid = acct.getName();
+          qtopic = aq[0].getSubject();
+          qtype = aq[0].getQuestion_type();
+          cout << "Current Question Type: " << qtype << endl;
+          cout << "New Question Type: " << endl;
+          cin >> qtype;
+
+          qtext = aq[0].getQuestion_text();
+          cout << "Current Question text: " << qtext << endl;
+          cout << "New Question text: " << endl;
+          cin.ignore();
+          getline(cin, qtext);
+          vector<string> quests;
+          switch (qtype){
+            case 0:
+              data1 = aq[0].getData1();
+              cout << "Current Option 1:" << data1 << endl;
+              cout << "New Option 1:"<< endl;
+              cin.clear();
+              getline(cin, data1);
+              data2 = aq[0].getData2();
+              cout << "Current Option 2:" << data2 << endl;
+              cout << "New Option 2:"<< endl;
+              cin.clear();
+              getline(cin, data2);
+              data3 = aq[0].getData3();
+              cout << "Current Option 3:" << data3 << endl;
+              cout << "New Option 3:"<< endl;
+              cin.clear();
+              getline(cin, data3);
+              data4 = aq[0].getData4();
+              cout << "Current Option 4:" << data4 << endl;
+              cout << "New Option 4:"<< endl;
+              cin.clear();
+              getline(cin, data4);
+              data5 = aq[0].getData5();
+              cout << "Current Answers:" << data5 << endl;
+              cout << "New Answers (1/2/3/4, comma seperated NO SPACES):" << endl;
+              cin.clear();
+              getline(cin, data5);
+
+              break;
+            case 1:
+              while(true) {
+                data5 = aq[0].getData5();
+                cout << "Current Answer (1/2): " << data5 << endl;
+                cout << "New Answer (1/2): " << endl;
+                cin >> data5;
+                if (data5 == "1" || data5 == "2"){
+                  break;
+                }
+              }
+
+              break;
+            case 2:
+              data5 = aq[0].getData5();
+              cout << "Current Answer: " << data5 << endl;
+              cout << "New Answer (comma seperated NO SPACES):" << endl;
+              cin.clear();
+              getline(cin, data5);
+              break;
+            case 3:
+              data1 = aq[0].getData1();
+              cout << "Current Options : " << data1 << endl;
+              cout << "New Options (comma seperated NO SPACES): " << endl;
+              cin.clear();
+              getline(cin, data1);
+              boost::split(quests, data1, boost::is_any_of(","), boost::token_compress_on);
+              data5 = aq[0].getData5();
+              cout << "Current Option numbers as the the answers (No spaces,seperated by comma): " << data5 << endl;
+              cout << "New Option numbers as the the answers (No spaces,seperated by comma): " << data5 << endl;
+              getline(cin, data5);
+              //for (auto const& s : ans) { data5 += s; };
+              break;
+            default:
+              cout << "Question Type Error: " << qtype << endl;
+              break;
+
+          }
+          marks = aq[0].getMarks();
+          cout << "Current Marks: " << marks << endl;
+          cout << "New Marks: ";
+          while(!(cin >> marks)){
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input.  Try again: ";
+          }
+          cout << "Question ID: " << qid << ", "
+               << "Teacher ID: " << teacherid << ", "
+               << "QTopic: " << qtopic << ", "
+               << "Qtext: " << qtext << ", "
+               << "Type: " << qtype << ", "
+               << "Data1: " << data1 << ", "
+               << "Data2: " << data2 << ", "
+               << "Data3: " << data3 << ", "
+               << "Data4: " << data4 << ", "
+               << "Data5: " << data5 << ", "
+               << "Marks: " << marks << ", "
+               << endl;
+          q.setQuestion_id(qid);
+          q.setTeacher_id(teacherid);
+          q.setSubject(qtopic);
+          q.setQuestion_text(qtext);
+          q.setQuestion_type(qtype);
+          q.setData1(data1);
+          q.setData2(data2);
+          q.setData3(data3);
+          q.setData4(data4);
+          q.setData5(data5);
+          q.setMarks(marks);
+          q.updateQuestion();
+          cout << endl;
+        } else
           cout << "No Question data returned. Invalid Question ID" << endl;
-        } else {
-
-        }
-
+        command = ""; // This should be at the very end of every command
       }
 
       if(command == "createquestion"){
