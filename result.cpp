@@ -1,10 +1,15 @@
 #include "result.h"
 
 Result::Result() {
-	cout << "lol";
+	this->quizname = "";
+	this->markObtained = 0;
+	this->totalMarks = 0;
+	this->inputAnswer = "";
+	this->question = "";
+	this->indvmark = "";
 }
 
-Result::Result(int userID, string quizname, string markObtained, string totalMarks, string inputAnswer, string actualAnswer, string question, string indvmark) {
+Result::Result(int userID, string quizname, int markObtained, int totalMarks, string inputAnswer, string actualAnswer, string question, string indvmark) {
 	this->userID = userID;
 	this->quizname = quizname;
 	this->markObtained = markObtained;
@@ -38,19 +43,19 @@ void Result::setQuizname(string quizname) {
 	this->quizname = quizname;
 }
 
-string Result::getMarkObtained() {
+int Result::getMarkObtained() {
 	return markObtained;
 }
 
-void Result::setMarkObtained(string markObtained) {
+void Result::setMarkObtained(int markObtained) {
 	this->markObtained = markObtained;
 }
 
-string Result::getTotalMarks() {
+int Result::getTotalMarks() {
 	return totalMarks;
 }
 
-void Result::setTotalMarks(string totalMarks) {
+void Result::setTotalMarks(int totalMarks) {
 	this->totalMarks = totalMarks;
 }
 
@@ -96,8 +101,8 @@ void Result::createResult() {
 		prep_stmt = DBcon->prepareStatement(SQL);
 		prep_stmt->setInt(1, userID);
 		prep_stmt->setString(2, quizname);
-		prep_stmt->setString(3, markObtained);
-		prep_stmt->setString(4, totalMarks);
+		prep_stmt->setInt(3, markObtained);
+		prep_stmt->setInt(4, totalMarks);
 		prep_stmt->setString(5, inputAnswer);
 		prep_stmt->setString(6, actualAnswer);
 		prep_stmt->setString(7, question);
@@ -134,8 +139,8 @@ Result Result::getSingleResult() {
 		if (res->next()) {
 			result.setUserID(res->getInt("user"));
 			result.setQuizname(res->getString("quizname"));
-			result.setMarkObtained(res->getString("obtained"));
-			result.setTotalMarks(res->getString("totalmark"));
+			result.setMarkObtained(res->getInt("obtained"));
+			result.setTotalMarks(res->getInt("totalmark"));
 			result.setInputAnswer(res->getString("inputanswer"));
 			result.setActualAnswer(res->getString("actualanswer"));
 			result.setQuestion(res->getString("question"));
@@ -151,4 +156,38 @@ Result Result::getSingleResult() {
 		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
 	}
 	return result;
+}
+
+vector<Result> Result::grabResultList(int aID) {
+	vector<Result> resultList;
+	resultList.reserve(20);
+
+	try {
+		mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+		sql::Connection *DBcon = Conn->Connect();
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
+		string SQL = "SELECT * FROM result WHERE user = ?";
+		prep_stmt = DBcon->prepareStatement(SQL);
+		prep_stmt->setInt(1, aID);
+		res = prep_stmt->executeQuery();
+
+		while (res->next()) {
+			Result result;
+			result.setResultID(res->getInt("rID"));
+			result.setQuizname(res->getString("quizname"));
+
+			resultList.push_back(result);
+			
+		}
+		DBcon->close();
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+	}
+	return resultList;
 }
