@@ -17,7 +17,7 @@ protected:
 	string data2; //MCQ - T/F
 	string data3; //MCQ
 	string data4; //MCQ
-	string data5; //Store MCQ choice
+	string data5; //Store MCQ/TF Answer
 	double marks;
 	//  DbConnection dc;
 
@@ -58,5 +58,6 @@ public:
 	void deleteQuestion(string question_id, string quizN);
 	void deleteQuestions(string quizN);
 	void updateSubject(string subject1, string subject2);
+  	void updateSubject(int id, string subject);
     int getLastQuestionID();
 };

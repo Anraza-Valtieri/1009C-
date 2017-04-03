@@ -239,6 +239,7 @@ vector<Questions> Questions::getQuestionsDataBySubject(string subject) {
 
 		while (res->next()) {
 			Questions q;
+            q.setQuestion_id(res->getInt("question_id"));
 			q.setQuestion_text(res->getString("question_text"));
 			q.setSubject(res->getString("subject"));
 			q.setQuestion_type(res->getInt("question_type"));
@@ -510,6 +511,33 @@ void Questions::updateSubject(string subject1, string subject2) {
 	}
 	return;
 }
+
+void Questions::updateSubject(int id, string subject) {
+  try {
+    mysqlconnector *Conn = new mysqlconnector("127.0.0.1", "1009", "root", "");
+    sql::Connection *DBcon = Conn->Connect();
+    sql::PreparedStatement *prep_stmt;
+    int res;
+    string SQL = "update quiz_questions set subject = ? WHERE question_id = ?";
+    prep_stmt = DBcon->prepareStatement(SQL);
+    prep_stmt->setString(1, subject);
+    prep_stmt->setInt(2, id);
+    res = prep_stmt->executeUpdate();
+    if (res > 0) {
+      cout << "Question Subject updated to " << subject << " for qID " << id << "!" << endl;
+    }
+    DBcon->close();
+  }
+  catch (sql::SQLException &e) {
+    cout << "# ERR: SQLException in " << __FILE__;
+    cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
+    cout << "# ERR: " << e.what();
+    cout << " (MySQL error code: " << e.getErrorCode();
+    cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+  }
+  return;
+}
+
 
 int getLastQuestionID(){
   try {

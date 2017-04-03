@@ -83,8 +83,9 @@ int main() {
       if(command == "" || command == "help" || command == "command") {
         cout << "Command list: " << endl;
         cout << "viewquizlist, viewquestionlist, openquiz, " << endl;
-        cout << "createquiz, createtopic, createquestion, " << endl;
-        cout << "linkquestions" << endl;
+        cout << "createquiz, createquestion, " << endl;
+        cout << "editquiz(WIP), editquestion(WIP), settopic, " << endl;
+        cout << "linkquestions, quit" << endl;
       }
 
       cout << endl << "Enter command/Action: ";
@@ -96,11 +97,25 @@ int main() {
       }
 
       if(command == "viewquestionlist"){
-        Questions q;
-        vector<string> questions = q.getAllQuestions();
-        cout << endl << "Available questions: " << endl;
-        for (int i = 0; i < questions.size(); i += 3) {
-          cout << questions[i] << ", " << questions[i+1] << ", " << questions[i+2] << endl;
+        string args;
+        cout << "Filter (all/Subject): ";
+        cin.ignore();
+        getline(cin, args);
+        if(args == "all") {
+          Questions q;
+          vector<string> questions = q.getAllQuestions();
+          cout << endl << "Available questions: " << endl;
+          for (int i = 0; i < questions.size(); i += 3) {
+            cout << questions[i] << ", " << questions[i + 1] << ", " << questions[i + 2] << endl;
+          }
+        }
+        else{
+          Questions q;
+          vector<Questions> questions = q.getQuestionsDataBySubject(args);
+          cout << endl << "Available questions: " << endl;
+          for (int i = 0; i < questions.size(); i++) {
+            cout << questions[i].getQuestion_id() << ", " << questions[i].getSubject() << ", " << questions[i].getQuestion_text() << endl;
+          }
         }
         cout << endl;
         command = ""; // This should be at the very end of every command
@@ -165,13 +180,114 @@ int main() {
         quiz.createquiz();
         command = ""; // This should be at the very end of every command
       }
-      if(command == "createtopic"){
 
+      if(command == "createquestion"){
+        string qtext, qtopic, data1, data2, data3, data4, data5;
+        int qtype;
+        double marks;
+        cout << "Question Topic: "<< endl;
+        cin.ignore();
+        getline(cin,qtopic);
+        cout << "Question text: "<< endl;
+        getline(cin, qtext);
+        cout << "Question type (MCQ - 0 | T/F - 1 | SA - 2 | Map - 3): ";
+        while(!(cin >> qtype)){
+          cin.clear();
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          cout << "Invalid input.  Try again: ";
+        }
+        vector<string> quests;
+        switch (qtype){
+          case 0:
+            cout << "Option 1:" << endl;
+            cin.ignore();
+            getline(cin, data1);
+            cout << "Option 2:" << endl;
+            cin.clear();
+            getline(cin, data2);
+            cout << "Option 3:" << endl;
+            cin.clear();
+            getline(cin, data3);
+            cout << "Option 4:" << endl;
+            cin.clear();
+            getline(cin, data4);
+            cout << "Answer (1/2/3/4, comma seperated NO SPACES):" << endl;
+            cin.clear();
+            getline(cin, data5);
+            /*while(!(cin >> data5)){
+              cin.clear();
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              cout << "Invalid input.  Try again: ";
+            }*/
+            break;
+          case 1:
+            cout << "T/F Selected" << endl;
+            while(true) {
+              cout << "Answer (1/2):" << endl;
+              //getline(cin, data5);
+              cin >> data5;
+              if (data5 == "1" || data5 == "2"){
+                break;
+              }
+              cout << data5;
+            }
+
+            break;
+          case 2:
+            cout << "SA Selected" << endl;
+            cout << "Answer (comma seperated NO SPACES):" << endl;
+            cin.ignore();
+            getline(cin, data5);
+            break;
+          case 3:
+            cout << "MAP Selected" << endl;
+            cout << "Options (comma seperated NO SPACES):" << endl;
+            cin.ignore();
+            getline(cin, data1);
+            cout << "Options entered: " << endl << data1 << endl;
+            boost::split(quests, data1, boost::is_any_of(","), boost::token_compress_on);
+            cout << "Option numbers as the the answers (No spaces,seperated by comma): " << endl;
+            getline(cin, data5);
+            //for (auto const& s : ans) { data5 += s; };
+            break;
+          default:
+            cout << "Question Type Error: " << qtype << endl;
+            break;
+
+        }
+        cout << "Marks: ";
+        while(!(cin >> marks)){
+          cin.clear();
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          cout << "Invalid input.  Try again: ";
+        }
+        cout << "qtopic: " << qtopic << ", "
+             << "Qtext: " << qtext << ", "
+             << "Type: " << qtype << ", "
+             << "Data1: " << data1 << ", "
+             << "Data2: " << data2 << ", "
+             << "Data3: " << data3 << ", "
+             << "Data4: " << data4 << ", "
+             << "Data5: " << data5 << ", "
+             << "Marks: " << marks << ", "
+             << endl;
+
+        Questions quest(teacher.getName(), qtopic,  qtext, qtype, data1, data2, data3, data4, data5, marks);
+        quest.createQuestion();
         command = ""; // This should be at the very end of every command
-
       }
-      if(command == "createquestions"){
+      if(command == "settopic"){
+        int args1;
+        cout << "Quiz ID to edit: ";
+        cin >> args1;
+        string qtopic;
+        cin.ignore();
+        cout << "Quiz Topic to set: ";
+        getline(cin,qtopic);
+        Questions q;
+        q.updateSubject(args1, qtopic);
         command = ""; // This should be at the very end of every command
+
       }
 
       if(command == "linkquestions"){
