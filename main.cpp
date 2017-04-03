@@ -303,6 +303,18 @@ int main() {
         q.linkQuestion(args, args2);
         command = ""; // This should be at the very end of every command
       }
+
+      if(command == "editquiz"){
+        string args = "";
+        cout << "Quiz name to edit: ";
+        cin >> args;
+        string args2 = "";
+        cout << "New Quiz name: ";
+        cin >> args2;
+        Quiz quiz;
+        quiz.setUpdateQuizName(args2, args);
+        command = ""; // This should be at the very end of every command
+      }
     }
 	}
 	cout << "END" << endl;
