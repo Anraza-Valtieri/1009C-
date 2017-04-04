@@ -198,6 +198,7 @@ vector<Questions> Questions::getQuestionsData(string question_id) {
 
 			if (res->next()) {
 				Questions q;
+                q.setQuestion_id(res->getInt("question_id"));
 				q.setQuestion_text(res->getString("question_text"));
 				q.setSubject(res->getString("subject"));
 				q.setQuestion_type(res->getInt("question_type"));

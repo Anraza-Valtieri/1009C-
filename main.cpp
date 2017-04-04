@@ -125,7 +125,7 @@ int main() {
         command = ""; // This should be at the very end of every command
       }
 
-      if(command == "openquiz"){
+      if(command == "openquiz") {
         Quiz quiz;
         string args;
         cin.ignore();
@@ -137,7 +137,7 @@ int main() {
         vector<Questions> aq = q.getQuestionsDataBySubject(qs);
         if (aq.size() > 0) {
           for (int i = 0; i < aq.size(); i++) {
-            cout << "Question No: " << i + 1 << endl;
+            cout << "Question No: " << i + 1 << " DBid: " << aq[i].getQuestion_id() << endl;
             cout << "Question text: " << aq[i].getQuestion_text() << endl; // Question text
             string type = "";
             switch (aq[i].getQuestion_type()) {
@@ -171,8 +171,48 @@ int main() {
             cout << endl;
             command = ""; // This should be at the very end of every command
           }
-        } else
-          cout << "No Question data returned. Invalid Quiz Name." << endl;
+        } else {
+
+          vector<Questions> aq = q.getQuestionsData(quiz.getQuestionids());
+          if (aq.size() > 0) {
+            for (int i = 0; i < aq.size(); i++) {
+              cout << "Question No: " << i + 1 << " DBid: " << aq[i].getQuestion_id() << endl;
+              cout << "Question text: " << aq[i].getQuestion_text() << endl; // Question text
+              string type = "";
+              switch (aq[i].getQuestion_type()) {
+                case 0:type = "MCQ";
+                  break;
+                case 1:type = "T/F";
+                  break;
+                case 2:type = "SA";
+                  break;
+                case 3:type = "map";
+                  break;
+                default:type = "Error";
+              }
+              cout << "Question type: " << type << endl; // Question type
+              if (aq[i].getQuestion_type() == 0) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+                cout << "Question data 1: " << aq[i].getData1() << endl;
+                cout << "Question data 2: " << aq[i].getData2() << endl;
+                cout << "Question data 3: " << aq[i].getData3() << endl;
+                cout << "Question data 4: " << aq[i].getData4() << endl;
+              }
+              if (aq[i].getQuestion_type() == 1) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+                cout << "Question data 1: " << aq[i].getData1() << endl;
+                cout << "Question data 2: " << aq[i].getData2() << endl;
+              }
+              if (aq[i].getQuestion_type() == 2) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+                cout << "Question data 1: " << aq[i].getData1() << endl;
+              }
+              if (aq[i].getQuestion_type() == 3) { //MCQ - 0 | T/F - 1 | SA - 2 | Map - 3
+
+              }
+              cout << endl;
+              command = ""; // This should be at the very end of every command
+            }
+          } else
+            cout << "No Question data returned. Invalid Quiz Name." << endl;
+        }
       }
       if(command == "createquiz"){
         string args = "";
