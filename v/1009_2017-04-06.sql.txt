@@ -1,0 +1,154 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 4541
+#
+# http://www.sequelpro.com/
+# https://github.com/sequelpro/sequelpro
+#
+# Host: 127.0.0.1 (MySQL 5.5.5-10.1.16-MariaDB)
+# Database: 1009
+# Generation Time: 2017-04-06 02:21:53 +0000
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table accounts
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `accounts`;
+
+CREATE TABLE `accounts` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `name` longtext NOT NULL,
+  `uniqueID` longtext NOT NULL,
+  `email` longtext NOT NULL,
+  `password` longtext NOT NULL,
+  `type` int(1) NOT NULL DEFAULT '0' COMMENT '0 - Lec, 1 - Student',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_2` (`id`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+LOCK TABLES `accounts` WRITE;
+/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
+
+INSERT INTO `accounts` (`id`, `name`, `uniqueID`, `email`, `password`, `type`)
+VALUES
+	(1,'Lecturer','Lecturer','Lecturer@gmail.com','1234',1),
+	(2,'Student','Student','Student@gmail.com','1234',0);
+
+/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table quiz
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `quiz`;
+
+CREATE TABLE `quiz` (
+  `quiz_id` int(11) NOT NULL AUTO_INCREMENT,
+  `quizname` longtext NOT NULL COMMENT 'Name for the quiz',
+  `question_id` longtext NOT NULL COMMENT 'All the question IDs',
+  `subject` longtext NOT NULL COMMENT 'question subject',
+  PRIMARY KEY (`quiz_id`),
+  UNIQUE KEY `quiz_id` (`quiz_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+LOCK TABLES `quiz` WRITE;
+/*!40000 ALTER TABLE `quiz` DISABLE KEYS */;
+
+INSERT INTO `quiz` (`quiz_id`, `quizname`, `question_id`, `subject`)
+VALUES
+	(1,'Java','','Java'),
+	(2,'Java OOP','','Java OOP'),
+	(3,'C++','','C++');
+
+/*!40000 ALTER TABLE `quiz` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table quiz_questions
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `quiz_questions`;
+
+CREATE TABLE `quiz_questions` (
+  `question_id` int(255) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key For Questions',
+  `teacher_id` longtext COMMENT 'To know which teacher created the question',
+  `subject` longtext COMMENT 'Subject for the question',
+  `question_text` longtext NOT NULL COMMENT 'The Question',
+  `question_type` int(1) NOT NULL DEFAULT '0' COMMENT 'MCQ - 0 T/F - 1 SA - 2',
+  `data1` longtext COMMENT 'MCQ Question/T&F/SA',
+  `data2` longtext COMMENT 'MCQ Question/T&F',
+  `data3` longtext COMMENT 'MCQ Question',
+  `data4` longtext COMMENT 'MCQ Question',
+  `data5` longtext COMMENT 'MCQ Answer',
+  `marks` double DEFAULT NULL COMMENT 'Marks',
+  PRIMARY KEY (`question_id`),
+  UNIQUE KEY `question_id` (`question_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+LOCK TABLES `quiz_questions` WRITE;
+/*!40000 ALTER TABLE `quiz_questions` DISABLE KEYS */;
+
+INSERT INTO `quiz_questions` (`question_id`, `teacher_id`, `subject`, `question_text`, `question_type`, `data1`, `data2`, `data3`, `data4`, `data5`, `marks`)
+VALUES
+	(1,'Lecturer','Java','How do you prevent a field or a method of any class from inheriting to sub classes?',2,'','','','','By,declaring,that,particular,field,or,method,as,private',2),
+	(2,'Lecturer','Java','Does java support multiple inheritance?',1,'','','','','1',2),
+	(3,'Lecturer','Java','Constructors are also inherited to sub classes. True or false?',1,'','','','','2',2),
+	(4,'Lecturer','java','A class be extended by more than one classes. True or false?',1,'','','','','1',2),
+	(5,'Lecturer','java','Method signature consists of..?',0,'Method Name, Return Type and Number Of Arguments','Access Modifier, Method Name and Types Of Arguments','Method Name, Number Of Arguments, Types Of Arguments and Order Of Arguments','Return Type, Access Modifier and Order Of Arguments','3',2),
+	(6,'Lecturer','test','This \\n is \\n a \\n test',2,'','','','','wow',100),
+	(7,'Lecturer','Java','This is a ______ question _',3,'map,option,mcq,SA,T/F,.','','','','1,6',10),
+	(8,'Lecturer','Java OOP','How do you prevent a field or a method of any class from inheriting to sub classes?',2,'','','','','By,declaring,that,particular,field,or,method,as,private',2),
+	(9,'Lecturer','Java OOP','Does java support multiple inheritance?',1,'','','','','1',2),
+	(10,'Lecturer','Java OOP','Constructors are also inherited to sub classes. True or false?',1,'','','','','2',2),
+	(11,'Lecturer','Java OOP','A class be extended by more than one classes. True or false?',1,'','','','','1',2),
+	(12,'Lecturer','Java OOP','Method signature consists of..?',0,'Method Name, Return Type and Number Of Arguments','Access Modifier, Method Name and Types Of Arguments','Method Name, Number Of Arguments, Types Of Arguments and Order Of Arguments','Return Type, Access Modifier and Order Of Arguments','3',2),
+	(13,'Lecturer','Java OOP','This is a ______ question _',3,'map,option,mcq,SA,T/F,.','','','','1,6',10),
+	(14,'Lecturer','C++','The programs machine instructions are store in __ memory segment.',3,'data,stack,heap,code','','','','4',2),
+	(15,'Lecturer','C++','What is the built in library function to compare two strings?',0,'string_cmp()','','strcmp()','str_compare()','2',2),
+	(16,'Lecturer','C++','Protected variables are only available to the class.',1,'','','','','2',2),
+	(17,'Lecturer','C++','The following is perfectly valid C++. How can this be given that main specified a return type of int yet no return statement is to be found?',2,'','','','','what,statement,?',4),
+	(18,'Lecturer','C++','Is the following a definition or a declaration?',2,'','','','','What,declaration,?',4);
+
+/*!40000 ALTER TABLE `quiz_questions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table results
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `results`;
+
+CREATE TABLE `results` (
+  `rID` int(255) NOT NULL AUTO_INCREMENT,
+  `user` int(255) NOT NULL,
+  `quizname` longtext NOT NULL,
+  `obtained` int(255) NOT NULL,
+  `totalmark` int(255) NOT NULL,
+  `inputanswer` longtext COMMENT 'Student''s answer',
+  `actualanswer` longtext COMMENT 'Correct answer',
+  `question` longtext COMMENT 'Question itself',
+  `indvmark` longtext COMMENT 'Individual marks / question',
+  PRIMARY KEY (`rID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
