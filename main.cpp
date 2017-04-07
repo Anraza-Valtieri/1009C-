@@ -216,8 +216,10 @@ int main() {
       }
       if(command == "createquiz"){
         string args = "";
-        cout << "Insert Quiz name to create: ";
-        cin >> args;
+        cout << "Insert Quiz name to create: " << endl;
+        //cin >> args;
+        cin.ignore();
+        getline(cin, args);
         Quiz quiz(args, "", args);
         quiz.createquiz();
         command = ""; // This should be at the very end of every command
